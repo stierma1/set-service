@@ -75,6 +75,18 @@ class Client{
     return this.minioClient.putObjectAsync(category, Client.getPath(fileName, true), buffer, buffer.length, metaMetaData); 
   }
   
+  async putMetaIfAbsent(category, fileName, buffer, metaData){
+    try{
+      const obj = await this.getObjectMetaStream(category, fileName);
+      if(obj){
+        return;
+      }
+      return this.putObjectMeta(category, fileName, buffer);
+    } catch(err){
+      return this.putObjectMeta(category, fileName, buffer);
+    }
+  }
+  
   async getObjectStream(){
     return this.minioClient.getObjectAsync(category, Client.getPath(fileName, false));
   }
@@ -95,6 +107,18 @@ class Client{
           });
         });
       });
+  }
+  
+  async putIfAbsent(category, fileName, buffer, metaData){
+    try{
+      const obj = await this.getObjectStream(category, fileName);
+      if(obj){
+        return;
+      }
+      return this.putObject(category, fileName, buffer, metaData);
+    } catch(err){
+      return this.putObject(category, fileName, buffer, metaData);
+    }
   }
   
   async putObject(category, fileName, buffer, metaData){
