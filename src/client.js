@@ -121,8 +121,24 @@ class Client{
     }
   }
   
+  async putStreamIfAbsent(category, fileName, stream, metaData){
+    try{
+      const obj = await this.getObjectStream(category, fileName);
+      if(obj){
+        return;
+      }
+      return this.putObjectStream(category, fileName, stream, metaData);
+    } catch(err){
+      return this.putObjectStream(category, fileName, stream, metaData);
+    }
+  }
+  
   async putObject(category, fileName, buffer, metaData){
     return this.minioClient.putObjectAsync(category, Client.getPath(fileName, false), buffer, buffer.length, metaData); 
+  }
+  
+  async putObjectStream(category, fileName, stream, metaData){
+    return this.minioClient.putObjectAsync(category, Client.getPath(fileName, false), stream, undefined, metaData);  
   }
   
   async getCategories(){
